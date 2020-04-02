@@ -1,0 +1,50 @@
+// ============================ 间距 ============================
+$name-list: margin padding;
+$short-name: m p;
+$gap: 10 15 20 25 30 35;
+$type: top bottom left right lr tb;
+
+@each $prefix in $short-name {
+  $i: index($short-name, $prefix);
+  @each $size in $gap {
+    @each $name in $type {
+      @if $name == lr {
+        .#{$prefix}-#{$name}-#{$size} {
+          #{nth($name-list, $i)}-left: #{$size}px;
+          #{nth($name-list, $i)}-right: #{$size}px;
+        }
+      } @else if $name == tb {
+        .#{$prefix}-#{$name}-#{$size} {
+          #{nth($name-list, $i)}-top: #{$size}px;
+          #{nth($name-list, $i)}-bottom: #{$size}px;
+        }
+      } @else {
+        .#{$prefix}-#{$name}-#{$size} {
+          #{nth($name-list, $i)}-#{$name}: #{$size}px;
+        }
+      }
+    }
+  }
+}
+
+// ============================ 方向 ============================
+.min-ta-left {
+  text-align: left;
+}
+.min-ta-right {
+  text-align: right;
+}
+.min-ta-center {
+  text-align: center;
+}
+.min-ta-justify {
+  text-align: justify;
+}
+
+// ============================ 字体大小 ============================
+.min-fs-20 {
+  font-size: 20px;
+}
+.min-fs-30 {
+  font-size: 30px;
+}
