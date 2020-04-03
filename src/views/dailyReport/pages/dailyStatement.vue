@@ -4,16 +4,11 @@
       <el-col :span="12" class="min-flex min-flex-main-start">
         <el-button type="primary" icon="el-icon-printer" class="m-right-10">打印</el-button>
         <DcDatePicker v-model="date"/>
+        <el-button type="primary" class="m-left-10" @click="getDailyBillInfo">搜索</el-button>
       </el-col>
       <el-col :span="12" class="min-ta-right">
-        <el-select v-model="value" placeholder="请选择">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
+        <el-cascader v-model="value" :options="options" placeholder="请选择" @change="handleChange">
+        </el-cascader>
       </el-col>
     </el-row>
     <el-row class="m-top-20">
@@ -28,30 +23,31 @@
       <el-col :span="styleStatus">
         <div class="title m-bottom-20">支付消费统计</div>
         <el-radio-group v-model="radio1">
-          <el-radio-button label="1">会员人数170</el-radio-button>
-          <el-radio-button label="2">散客34</el-radio-button>
+          <el-radio-button label="1">{{head1}}</el-radio-button>
+          <el-radio-button label="2">{{head2}}</el-radio-button>
         </el-radio-group>
-        <div id="chartColumn" style="width: 300px; height: 160px;"></div>
+        <div v-show="radio1 === '1'" id="chartColumn" style="width: 300px; height: 160px;"></div>
+        <div v-show="radio1 === '2'" id="chartColumnx" style="width: 300px; height: 160px;"></div>
       </el-col>
       <el-col :span="styleStatus">
         <div class="title m-bottom-20">新增会员统计</div>
         <div id="chartColumn1" style="width: 300px; height: 160px;"></div>
       </el-col>
-      <el-col :span="styleStatus">
+      <el-col :span="styleStatus" v-if="member">
         <div class="title">会员储值金额</div>
-        <DcReceipt :list="list" />
+        <DcReceipt :list="list3" />
       </el-col>
-      <el-col :span="styleStatus">
+      <el-col :span="styleStatus" v-if="mitsuji">
         <div class="title">充次金额</div>
-        <DcReceipt :list="list" />
+        <DcReceipt :list="list4" />
       </el-col>
-      <el-col :span="styleStatus">
+      <el-col :span="styleStatus" v-if="secondaryCard">
         <div class="title">次卡售卡统计</div>
         <DcReceipt1 :list="list1" />
       </el-col>
-      <el-col :span="styleStatus">
+      <el-col :span="styleStatus" v-if="refund">
         <div class="title">退货金额</div>
-        <DcReceipt :list="list" />
+        <DcReceipt :list="list2" />
       </el-col>
     </el-row>
     <el-button style="width: 300px;" type="primary" icon="el-icon-printer" class="m-right-10">打印</el-button>
@@ -63,7 +59,7 @@ import echarts from 'echarts'
 import DcDatePicker from '@/components/DcDatePicker'
 import DcReceipt from '../components/DcReceipt'
 import DcReceipt1 from '../components/DcReceipt1'
-import { getDailyBillInfo } from '@/api'
+import { getDailyBillInfo, getCommonBranchStorelist } from '@/api'
 
 export default {
   name: 'DailyStatement',
@@ -75,9 +71,12 @@ export default {
   data () {
     return {
       totalData: [],
-      radio1: 1,
+      radio1: '1',
       styleStatus: 24,
+      userId: '',
       date: [],
+      head1: '会员人数',
+      head2: '散客人数',
       list: [
         {
           label: '现金',
@@ -96,28 +95,10 @@ export default {
           money: 500.0
         }
       ],
-      list1: [
-        {
-          label: '现金',
-          num: 18,
-          money: 500.0
-        },
-        {
-          label: '微信',
-          num: 98,
-          money: 500.0
-        },
-        {
-          label: '支付宝',
-          num: 199,
-          money: 500.0
-        },
-        {
-          label: '银联卡',
-          num: 189,
-          money: 500.0
-        }
-      ],
+      list1: [],
+      list2: [],
+      list3: [],
+      list4: [],
       charts: '',
       opinion: ['支付宝', '微信', '现金', '龙支付'],
       opinionData: [
@@ -132,44 +113,175 @@ export default {
         现金: '现金   ￥11312  10%',
         龙支付: '龙支付   ￥11312  10%'
       },
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      value: ''
+      options: [],
+      value: '',
+      livemodel: {},
+      mamount: 0,
+      opinion1: [],
+      obj1: {},
+      opinionData1: [],
+      iamount: 0,
+      iopinion1: [],
+      iobj1: {},
+      iopinionData1: [],
+      secondaryCard: false,
+      refund: false,
+      mitsuji: false,
+      member: false
     }
   },
   mounted () {
     this.$nextTick(function () {
-      this.drawPie('chartColumn')
-      this.drawPie('chartColumn1')
+      // this.drawPie('chartColumn')
+      // this.drawPie('chartColumn1')
     })
-    getDailyBillInfo({}).then(res => {
-      console.log(res)
-      this.totalData = res.totalData
+    this.getDailyBillInfo()
+    getCommonBranchStorelist().then(res => {
+      this.options = res
     })
   },
   methods: {
-    drawPie (id) {
+    handleChange (e) {
+      this.userId = e ? e[e.length - 1] : ''
+      this.getDailyBillInfo()
+    },
+    getDailyBillInfo () {
+      getDailyBillInfo({
+        startdate: this.date[0],
+        enddate: this.date[1],
+        user_id: this.userId
+      }).then(res => {
+        this.refund = false
+        this.secondaryCard = false
+        this.mitsuji = false
+        this.member = false
+        this.totalData = res.totalData
+        const opinion = []
+        const obj = {}
+        const liveCount = res.livemodel.liveCount
+        const opinionData = res.livemodel.livemodel.map(item => {
+          opinion.push(item.name)
+          const count = isNaN(item.count / res.livemodel.liveCount) ? 0 : ((item.count / res.livemodel.liveCount) * 100).toFixed(2)
+          obj[item.name] = `${item.name}    ${item.count}￥    ${count}%`
+          return {
+            name: item.name,
+            value: item.count
+          }
+        })
+
+        if (res.memberConsumeData) {
+          this.mamount = res.memberConsumeData.amount
+          this.opinion1 = []
+          this.obj1 = {}
+          this.head1 = res.memberConsumeData.head
+          this.opinionData1 = res.memberConsumeData.consumeData.map(item => {
+            this.opinion1.push(item.payment)
+            const count = isNaN(item.amount / this.mamount) ? 0 : ((item.amount / this.mamount) * 100).toFixed(2)
+            this.obj1[item.payment] = `${item.payment}   ${item.amount}￥   ${count}%`
+            return {
+              name: item.payment,
+              value: item.amount
+            }
+          })
+        }
+
+        if (res.individualConsumeData) {
+          this.iamount = res.individualConsumeData.amount
+          this.iopinion1 = []
+          this.iobj1 = {}
+          this.head2 = res.individualConsumeData.head
+          this.iopinionData1 = res.individualConsumeData.consumeData.map(item => {
+            this.iopinion1.push(item.payment)
+            const count = isNaN(item.amount / this.iamount) ? 0 : ((item.amount / this.iamount) * 100).toFixed(2)
+            this.iobj1[item.payment] = `${item.payment}   ${item.amount}￥   ${count}%`
+            return {
+              name: item.payment,
+              value: item.amount
+            }
+          })
+        }
+
+        let totalNum = 0
+        let totalMoney = 0
+        if (res.subcardsalescarddata) {
+          this.secondaryCard = true
+          this.list1 = res.subcardsalescarddata.subcardsalescard.map(item => {
+            totalNum += item.number
+            totalMoney += item.amount
+            return {
+              label: item.name,
+              num: item.number,
+              money: item.amount
+            }
+          })
+          this.list1.push({
+            label: '合计',
+            num: totalNum,
+            money: totalMoney
+          })
+        }
+
+        let totalMoney1 = 0
+        if (res.refundData) {
+          this.refund = true
+          this.list2 = res.refundData.consumeData.map(item => {
+            totalMoney1 += item.amount
+            return {
+              label: item.payment,
+              money: item.amount
+            }
+          })
+          this.list2.push({
+            label: '合计',
+            money: totalMoney1
+          })
+        }
+
+        let totalMoney2 = 0
+        if (res.refundData) {
+          this.member = true
+          this.list3 = res.membeRechargeData.consumeData.map(item => {
+            totalMoney2 += item.amount
+            return {
+              label: item.payment,
+              money: item.amount
+            }
+          })
+          this.list3.push({
+            label: '合计',
+            money: totalMoney2
+          })
+        }
+
+        let totalMoney3 = 0
+        if (res.refundData) {
+          this.mitsuji = true
+          this.list4 = res.membeChargeSubData.consumeData.map(item => {
+            totalMoney3 += item.amount
+            return {
+              label: item.payment,
+              money: item.amount
+            }
+          })
+          this.list4.push({
+            label: '合计',
+            money: totalMoney3
+          })
+        }
+
+        this.drawPie('chartColumn1', opinion, opinionData, obj, liveCount)
+        this.drawPie('chartColumn', this.opinion1, this.opinionData1, this.obj1, this.mamount)
+        this.drawPie('chartColumnx', this.iopinion1, this.iopinionData1, this.iobj1, this.iamount)
+      })
+    },
+    drawPie (id, opinion, opinionData, obj, liveCount) {
       this.charts = echarts.init(document.getElementById(id))
       this.charts.setOption({
         title: {
           zlevel: 0,
           text: [
             '{name|总金额}',
-            '{value|￥' + 100000 + '}'
+            '{value|￥' + liveCount + '}'
 
           ].join('\n'),
           top: 'center',
@@ -202,9 +314,9 @@ export default {
           x: 'right',
           y: 'center',
           formatter: (name) => {
-            return this.obj[name]
+            return obj[name]
           },
-          data: this.opinion
+          data: opinion
         },
         series: [
           {
@@ -226,7 +338,7 @@ export default {
                 show: false
               }
             },
-            data: this.opinionData
+            data: opinionData
           }
         ]
       })

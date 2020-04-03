@@ -53,7 +53,7 @@
           </div>
           <div>
             <span style="padding-right: 10px">还没有达达账户</span>
-            <el-button type="text" @click="dialogVisible = true">前往快速申请</el-button>
+            <el-button type="text" @click="openDialog">前往快速申请</el-button>
             <span style="padding: 10px">|</span>
             <el-button type="text">参数填写提示</el-button>
           </div>
@@ -92,20 +92,12 @@
       </div>
       <el-form label-width="80px" label-position="left" size="mini">
         <el-form-item label="手机号码">
-          <el-input style="width: 200px;" placeholder="请输入注册手机号码"></el-input>
+          <el-input style="width: 200px;" v-model="phone" placeholder="请输入注册手机号码"></el-input>
         </el-form-item>
         <el-form-item label="企业全称">
-          <el-input style="width: 200px;" placeholder="请输入企业全称"></el-input>
+          <el-input style="width: 200px;" v-model="enterprise" placeholder="请输入企业全称"></el-input>
         </el-form-item>
         <el-form-item label="企业地址">
-          <el-select v-model="value" placeholder="选择省份" style="width: 100px;">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
           <el-select v-model="value" placeholder="选择城市" style="width: 100px;">
             <el-option
               v-for="item in options"
@@ -114,21 +106,21 @@
               :value="item.value">
             </el-option>
           </el-select>
-          <el-input style="width: 200px;" placeholder="请输入具体地址"></el-input>
+          <el-input style="width: 200px;" v-model="addr" placeholder="请输入具体地址"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input style="width: 200px;" placeholder="请输入联系人姓名"></el-input>
+          <el-input style="width: 200px;" v-model="name" placeholder="请输入联系人姓名"></el-input>
         </el-form-item>
         <el-form-item label="联系电话">
-          <el-input style="width: 200px;" placeholder="请输入联系电话"></el-input>
+          <el-input style="width: 200px;" v-model="tel" placeholder="请输入联系电话"></el-input>
         </el-form-item>
         <el-form-item label="邮箱地址">
-          <el-input style="width: 200px;" placeholder="请输入邮箱地址"></el-input>
+          <el-input style="width: 200px;" v-model="email" placeholder="请输入邮箱地址"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="registerMerchant">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -140,8 +132,11 @@ export default {
   data () {
     return {
       radio: 0,
-      value: '0',
-      options: [],
+      value: '020',
+      options: [{
+        label: '广州',
+        value: '020'
+      }],
       dialogVisible: false,
       // 配送方式，0：自配送，1：达达配送，2：蜂鸟配送，3：顺丰配送，4：美团配送
       DeliverMode: 0,
@@ -165,11 +160,16 @@ export default {
       inModel: false,
       // 配送模式
       outModel: false,
-      jData: {}
+      jData: {},
+      phone: '',
+      enterprise: '',
+      addr: '',
+      name: '',
+      tel: '',
+      email: ''
     }
   },
   created () {
-    this.aa()
     axios.get('http://192.168.1.220:97/api/TakeOutFood/GetUserModuleConfigDetail?key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI1ODEzOTA5OSIsImlhdCI6MTU4NTUzODk0NSwianRpIjpmYWxzZSwiZGVjX2lzc2FsZXNjbGVyayI6ZmFsc2UsImRlY19zYWxlc2NsZXJrX2lkIjowfQ.Q-nr6X4kQhEYTAzkPybeyZDLYsfFmo2iDWG4aa7XZfA&code=ShopCateringWechatConfig')
       .then(res => {
         let data = res.data.values.sv_detail_value
@@ -190,8 +190,26 @@ export default {
       })
   },
   methods: {
-    aa () {
+    openDialog () {
+      this.phone = ''
+      this.enterprise = ''
+      this.addr = ''
+      this.name = ''
+      this.tel = ''
+      this.email = ''
+      this.value = ''
+      this.dialogVisible = true
+    },
+    suppurtCitys () {
       axios.get('http://192.168.1.69:2081/api/Wx/SuppurtCitys?key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI1ODEzOTA5OSIsImlhdCI6MTU4NTUzODk0NSwianRpIjpmYWxzZSwiZGVjX2lzc2FsZXNjbGVyayI6ZmFsc2UsImRlY19zYWxlc2NsZXJrX2lkIjowfQ.Q-nr6X4kQhEYTAzkPybeyZDLYsfFmo2iDWG4aa7XZfA')
+        .then(res => {
+          console.log(res)
+        })
+    },
+    registerMerchant () {
+      axios.post('http://192.168.1.69:2081/api/Wx/RegisterMerchant?key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI1ODEzOTA5OSIsImlhdCI6MTU4NTUzODk0NSwianRpIjpmYWxzZSwiZGVjX2lzc2FsZXNjbGVyayI6ZmFsc2UsImRlY19zYWxlc2NsZXJrX2lkIjowfQ.Q-nr6X4kQhEYTAzkPybeyZDLYsfFmo2iDWG4aa7XZfA', {
+
+      })
         .then(res => {
           console.log(res)
         })

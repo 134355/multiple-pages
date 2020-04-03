@@ -281,14 +281,8 @@ function getProInStockStaInfo (params) {
  * @description 每日对账单
  */
 function getDailyBillInfo (params) {
-  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
-  delete params.user_id
-  const data = {
-    ...params,
-    user_id: userId
-  }
   return request.get('/api/IntelligentAnalysis/GetDailyBillInfo', {
-    params: data
+    params
   })
 }
 
