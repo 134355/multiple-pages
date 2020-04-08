@@ -236,12 +236,6 @@ function getPaymentAmountInfo (params) {
  * @description 店铺营业报表
  */
 function getUserBusinessInfo (params) {
-  // const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
-  // delete params.user_id
-  // const data = {
-  //   ...params,
-  //   user_id: userId
-  // }
   return request.get('/api/IntelligentAnalysis/GetUserBusinessInfo', {
     params
   })
@@ -303,6 +297,131 @@ function getReconciliationInfo (params) {
     params
   })
 }
+// ================================= 库存报表 =================================
+
+/**
+ * @description 出入库明细表
+ */
+function getStockDetailInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetStockDetailInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 出入库明细导出
+ */
+function stockDetailExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    page: params.page,
+    pagesize: params.pagesize,
+    storestocktype: params.storestocktype,
+    startdate: params['startdate&enddate'][0],
+    enddate: params['startdate&enddate'][1],
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/StockDetail_Excel', {
+    params: data
+  })
+}
+
+/**
+ * @description 获取采购统计信息
+ */
+function getProductsPurStatInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetProductsPurStatInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 导出采购统计信息
+ */
+function productsPurStatExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    page: params.page,
+    pagesize: params.pagesize,
+    startdate: params['startdate&enddate'][0],
+    enddate: params['startdate&enddate'][1],
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/ProductsPurStat_Excel', {
+    params: data
+  })
+}
+
+/**
+ * @description 获取商品进货排行信息
+ */
+function getProductsPurRankInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetProductsPurRankInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 导出商品进货排行信息
+ */
+function productsPurRankExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    page: params.page,
+    pagesize: params.pagesize,
+    startdate: params['startdate&enddate'][0],
+    enddate: params['startdate&enddate'][1],
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/ProductsPurRank_Excel', {
+    params: data
+  })
+}
+
+/**
+ * @description 获取供应商进货排行信息
+ */
+function getSupplierPurRankInfo (params) {
+  return request.get('/api/IntelligentAnalysis/GetSupplierPurRankInfo', {
+    params
+  })
+}
+
+/**
+ * @description 导出供应商进货排行信息
+ */
+function supplierPurRankExcel (params) {
+  const data = {
+    page: params.page,
+    pagesize: params.pagesize,
+    startdate: params['startdate&enddate'][0],
+    enddate: params['startdate&enddate'][1]
+  }
+  return request.get('/api/IntelligentAnalysis/SupplierPurRank_Excel', {
+    params: data
+  })
+}
 
 export {
   getProSaleStaInfo,
@@ -323,5 +442,13 @@ export {
   getStoreMemberSaleCountInfo,
   getMemberSalesAnalysis,
   getChangeShiftsInfo,
-  getReconciliationInfo
+  getReconciliationInfo,
+  getStockDetailInfo,
+  stockDetailExcel,
+  getProductsPurStatInfo,
+  productsPurStatExcel,
+  getProductsPurRankInfo,
+  productsPurRankExcel,
+  getSupplierPurRankInfo,
+  supplierPurRankExcel
 }

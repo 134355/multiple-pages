@@ -8,7 +8,8 @@
   </div>
 </template>
 <script>
-import { getProSaleStaInfo, getCommonBranchStorelist } from '@/api/index'
+import { getStockDetailInfo, getCommonBranchStorelist, stockDetailExcel } from '@/api/index'
+import { download } from '@/utils/utils'
 
 export default {
   name: 'AccessInventoryDetails',
@@ -16,7 +17,7 @@ export default {
     handleLoad (app) {
       app
         .set('service', {
-          page: getProSaleStaInfo
+          page: getStockDetailInfo
         })
         .set('table', {
           columns: [
@@ -27,52 +28,52 @@ export default {
               width: '50'
             },
             {
-              prop: 'sv_p_name',
+              prop: 'sv_pc_noid',
               label: '单据编号'
             },
             {
-              prop: 'sv_p_barcode',
+              prop: 'sv_user_name',
               label: '门店'
             },
             {
-              prop: 'sv_p_specs',
+              prop: 'sv_p_barcode',
               label: '商品编号'
             },
             {
-              prop: 'address',
+              prop: 'sv_pc_name',
               label: '商品类别',
               emptyText: '暂无类别'
             },
             {
-              prop: 'sv_p_unit',
+              prop: 'sv_p_name',
               label: '商品名称'
             },
             {
-              prop: 'sv_p_storage',
+              prop: 'sv_type_name',
               label: '单据类型'
             },
             {
-              prop: 'product_sale_num',
+              prop: 'bill_date',
               label: '单据日期'
             },
             {
-              prop: 'product_total_price',
+              prop: 'sv_in_num_0',
               label: '进项数量'
             },
             {
-              prop: 'product_receivable',
+              prop: 'sv_out_num_0',
               label: '出项数量'
             },
             {
-              prop: 'product_rec_proportion',
+              prop: 'sv_p_specs',
               label: '规格'
             },
             {
-              prop: 'product_profit',
+              prop: 'sv_p_unit',
               label: '单位'
             },
             {
-              prop: 'product_profit_margin',
+              prop: 'sv_pc_combined',
               label: '金额'
             }
           ]
@@ -84,7 +85,7 @@ export default {
               name: 'DcDatePicker'
             },
             {
-              prop: 'is_exist_sale',
+              prop: 'storestocktype',
               name: 'el-select',
               component: {
                 style: {
@@ -104,11 +105,11 @@ export default {
                   },
                   {
                     label: '入库单',
-                    value: 0
+                    value: 2
                   },
                   {
                     label: '出库单',
-                    value: 2
+                    value: 3
                   },
                   {
                     label: '调拨单',
@@ -140,6 +141,11 @@ export default {
         })
         .set('action', [])
         .done()
+    },
+    handleExport (scope) {
+      stockDetailExcel(scope).then(res => {
+        download(res)
+      })
     }
   }
 }

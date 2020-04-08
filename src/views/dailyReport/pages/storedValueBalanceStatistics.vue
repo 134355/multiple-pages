@@ -7,6 +7,31 @@
 import { getValueCardStaInfo, getCommonBranchStorelist } from '@/api/index'
 export default {
   name: 'StoredValueBalanceStatistics',
+  data () {
+    return {
+      formItem: [
+        {
+          prop: 'startdate&enddate',
+          name: 'DcDatePicker'
+        },
+        {
+          prop: 'user_id',
+          name: 'el-cascader',
+          service: getCommonBranchStorelist,
+          component: {
+            props: {
+              placeholder: '请选择门店'
+            }
+          }
+        }
+      ]
+    }
+  },
+  created () {
+    if (window.IsStore) {
+      this.formItem.splice(1, 1)
+    }
+  },
   methods: {
     handleLoad (app) {
       app
@@ -47,22 +72,7 @@ export default {
           ]
         })
         .set('searchForm', {
-          item: [
-            {
-              prop: 'startdate&enddate',
-              name: 'DcDatePicker'
-            },
-            {
-              prop: 'user_id',
-              name: 'el-cascader',
-              service: getCommonBranchStorelist,
-              component: {
-                props: {
-                  placeholder: '请选择门店'
-                }
-              }
-            }
-          ],
+          item: this.formItem,
           action: ['search', 'reset', 'export']
         })
         .set('action', [])

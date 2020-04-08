@@ -139,6 +139,10 @@
       <el-table
         :data="dataList1">
         <el-table-column
+          type="index"
+          label="排名">
+        </el-table-column>
+        <el-table-column
           prop="sv_mr_name"
           label="商品名称">
         </el-table-column>
@@ -222,6 +226,11 @@ export default {
       order_total_pdgfee: 0
     }
   },
+  created () {
+    if (window.IsStore) {
+      this.form.item.splice(1, 1)
+    }
+  },
   mounted () {
     this.getProductAnalysisByShop({})
   },
@@ -235,7 +244,6 @@ export default {
         this.newmember_count = res.newmember_count
         this.oldmember_count = res.oldmember_count
         this.newmember_order_receivable_ratio = res.newmember_order_receivable_ratio * 100
-        console.log(this.newmember_order_receivable_ratio)
         this.oldmember_order_receivable_ratio = res.oldmember_order_receivable_ratio * 100
       })
     },
@@ -246,7 +254,6 @@ export default {
     },
     getStoreMemberSaleCountInfo (data) {
       getStoreMemberSaleCountInfo(data).then(res => {
-        console.log(res)
         let count = 0
         let pieData = []
         const pieOp = []
@@ -305,7 +312,6 @@ export default {
     },
     getShopBusAnalysis (data) {
       getShopBusAnalysis(data).then(res => {
-        console.log(res)
         res.dataList.forEach(item => {
           this.plainx1.push(item.intelligent_datetime)
           this.plainReceivables1.push(item.order_receivable)

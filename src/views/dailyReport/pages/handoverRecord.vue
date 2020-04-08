@@ -87,6 +87,7 @@
 
 <script>
 import { getChangeShiftsInfo, getReconciliationInfo } from '@/api'
+import { dateFormat } from '@/utils/utils'
 import DcReceipt from '../components/DcReceipt'
 export default {
   name: 'HandoverRecord',
@@ -141,15 +142,24 @@ export default {
             },
             {
               prop: 'start_time',
-              label: '开始时间'
+              label: '开始时间',
+              formatter: (row) => {
+                return dateFormat('YYYY-mm-dd HH:MM', new Date(row.start_time))
+              }
             },
             {
               prop: 'end_time',
-              label: '结束时间'
+              label: '结束时间',
+              formatter: (row) => {
+                return dateFormat('YYYY-mm-dd HH:MM', new Date(row.end_time))
+              }
             },
             {
               prop: 'succession_time',
-              label: '交接时间'
+              label: '交接时间',
+              formatter: (row) => {
+                return dateFormat('YYYY-mm-dd HH:MM', new Date(row.succession_time))
+              }
             },
             {
               prop: 'cash_money',
@@ -173,7 +183,11 @@ export default {
         .done()
     },
     handleReconciliation (row) {
-      getReconciliationInfo().then(res => {
+      getReconciliationInfo({
+        operator_id: row.operator_id,
+        startdate: dateFormat('YYYY-mm-dd HH:MM', new Date(row.start_time)),
+        enddate: dateFormat('YYYY-mm-dd HH:MM', new Date(row.end_time))
+      }).then(res => {
         this.list0 = []
         this.islist0 = false
         this.list = []
@@ -267,42 +281,42 @@ export default {
           })
         }
 
-        if (res.xmoney !== 0) {
+        if (res.qxmoney !== 0) {
           this.islist1 = true
           this.list1.push({
             label: '现金',
             money: res.qxmoney
           })
         }
-        if (res.wmoney !== 0) {
+        if (res.qwxmoney !== 0) {
           this.islist1 = true
           this.list1.push({
             label: '微信',
-            money: res.qwmoney
+            money: res.qwxmoney
           })
         }
-        if (res.wxjzmoney !== 0) {
+        if (res.qwxjzmoney !== 0) {
           this.islist1 = true
           this.list1.push({
             label: '微信记账',
             money: res.qwxjzmoney
           })
         }
-        if (res.ymoney !== 0) {
+        if (res.qymoney !== 0) {
           this.islist1 = true
           this.list1.push({
             label: '银联卡',
             money: res.qymoney
           })
         }
-        if (res.zmoney !== 0) {
+        if (res.qzmoney !== 0) {
           this.islist1 = true
           this.list1.push({
             label: '支付宝',
             money: res.qzmoney
           })
         }
-        if (res.zjzmoney !== 0) {
+        if (res.qzjzmoney !== 0) {
           this.islist1 = true
           this.list1.push({
             label: '支付宝记账',

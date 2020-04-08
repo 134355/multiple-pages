@@ -6,8 +6,8 @@
         <DcDatePicker v-model="date"/>
         <el-button type="primary" class="m-left-10" @click="getDailyBillInfo">搜索</el-button>
       </el-col>
-      <el-col :span="12" class="min-ta-right">
-        <el-cascader v-model="value" :options="options" placeholder="请选择" @change="handleChange">
+      <el-col :span="12" class="min-ta-right" v-if="!showStore">
+        <el-cascader v-model="value" :options="options" placeholder="请选择门店" @change="handleChange">
         </el-cascader>
       </el-col>
     </el-row>
@@ -127,7 +127,16 @@ export default {
       secondaryCard: false,
       refund: false,
       mitsuji: false,
-      member: false
+      member: false,
+      showStore: true
+    }
+  },
+  created () {
+    console.log(window.IsStore)
+    if (window.IsStore) {
+      this.showStore = window.IsStore
+    } else {
+      this.showStore = false
     }
   },
   mounted () {

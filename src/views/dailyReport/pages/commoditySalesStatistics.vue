@@ -41,7 +41,68 @@ export default {
   data () {
     return {
       memberData: [],
-      dialogTableVisible: false
+      dialogTableVisible: false,
+      formItem: [
+        {
+          prop: 'is_exist_sale',
+          name: 'el-select',
+          component: {
+            style: {
+              width: '150px'
+            },
+            props: {
+              placeholder: '请选择'
+            },
+            options: [
+              {
+                label: '全部',
+                value: -1
+              },
+              {
+                label: '有销量',
+                value: 1
+              },
+              {
+                label: '无销量',
+                value: 0
+              }
+            ]
+          }
+        },
+        {
+          prop: 'sv_pc_id',
+          name: 'el-select',
+          service: getFirstCategory,
+          component: {
+            style: {
+              width: '150px'
+            },
+            props: {
+              placeholder: '请选择分类'
+            }
+          }
+        },
+        {
+          prop: 'startdate&enddate',
+          name: 'DcDatePicker'
+        },
+        {
+          prop: 'user_id',
+          name: 'el-cascader',
+          service: getCommonBranchStorelist,
+          component: {
+            props: {
+              placeholder: '请选择门店',
+              filterable: true
+            }
+          }
+        }
+      ]
+    }
+  },
+  created () {
+    if (window.IsStore) {
+      this.formItem.splice(3, 1)
     }
   },
   methods: {
@@ -116,62 +177,7 @@ export default {
           }
         })
         .set('searchForm', {
-          item: [
-            {
-              prop: 'is_exist_sale',
-              name: 'el-select',
-              component: {
-                style: {
-                  width: '150px'
-                },
-                props: {
-                  placeholder: '请选择'
-                },
-                options: [
-                  {
-                    label: '全部',
-                    value: -1
-                  },
-                  {
-                    label: '有销量',
-                    value: 1
-                  },
-                  {
-                    label: '无销量',
-                    value: 0
-                  }
-                ]
-              }
-            },
-            {
-              prop: 'sv_pc_id',
-              name: 'el-select',
-              service: getFirstCategory,
-              component: {
-                style: {
-                  width: '150px'
-                },
-                props: {
-                  placeholder: '请选择分类'
-                }
-              }
-            },
-            {
-              prop: 'startdate&enddate',
-              name: 'DcDatePicker'
-            },
-            {
-              prop: 'user_id',
-              name: 'el-cascader',
-              service: getCommonBranchStorelist,
-              component: {
-                props: {
-                  placeholder: '请选择门店',
-                  filterable: true
-                }
-              }
-            }
-          ],
+          item: this.formItem,
           keyWords: {
             prop: 'keywards',
             placeholder: '输入商品名称/商品编码查询',
@@ -226,7 +232,6 @@ export default {
       }
       this.dialogTableVisible = true
       getMemberSaleStaDetailInfo(obj).then(res => {
-        console.log(res)
         this.memberData = res.dataList
       })
     }
