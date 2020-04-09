@@ -53,6 +53,7 @@ console.log(pages)
 module.exports = {
   publicPath: isProduction ? './' : '/',
   lintOnSave: !isProduction,
+  outputDir: 'reportForm',
   pages,
   configureWebpack: config => {
     if (isProduction) {

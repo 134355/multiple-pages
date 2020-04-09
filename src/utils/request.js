@@ -17,7 +17,7 @@ instance.interceptors.request.use(config => {
   // 在发送请求之前做些什么
   if (config.method === 'get') {
     config.params = {
-      key: key,
+      key: sessionStorage.getItem('dcKey') || key,
       ...config.params
     }
   }

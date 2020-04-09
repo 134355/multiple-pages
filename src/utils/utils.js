@@ -44,3 +44,17 @@ export function dateFormat (fmt, date) {
   }
   return fmt
 }
+
+export function parseParams (obj) {
+  const params = {}
+  Object.keys(obj).forEach(key => {
+    if (key.includes('&')) {
+      key.split('&').forEach((k, i) => {
+        params[k] = (obj[key] && (obj[key][i] || '')) || ''
+      })
+    } else {
+      params[key] = obj[key]
+    }
+  })
+  return JSON.parse(JSON.stringify(params))
+}

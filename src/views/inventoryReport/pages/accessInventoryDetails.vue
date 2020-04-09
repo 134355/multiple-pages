@@ -9,10 +9,70 @@
 </template>
 <script>
 import { getStockDetailInfo, getCommonBranchStorelist, stockDetailExcel } from '@/api/index'
-import { download } from '@/utils/utils'
+import { download, dateFormat } from '@/utils/utils'
 
 export default {
   name: 'AccessInventoryDetails',
+  data () {
+    return {
+      formItem: [
+        {
+          prop: 'startdate&enddate',
+          name: 'DcDatePicker'
+        },
+        {
+          prop: 'storestocktype',
+          name: 'el-select',
+          component: {
+            style: {
+              width: '150px'
+            },
+            props: {
+              placeholder: '请选择'
+            },
+            options: [
+              {
+                label: '全部',
+                value: -1
+              },
+              {
+                label: '销售单',
+                value: 1
+              },
+              {
+                label: '入库单',
+                value: 2
+              },
+              {
+                label: '出库单',
+                value: 3
+              },
+              {
+                label: '调拨单',
+                value: 4
+              }
+            ]
+          }
+        },
+        {
+          prop: 'user_id',
+          name: 'el-cascader',
+          service: getCommonBranchStorelist,
+          component: {
+            props: {
+              placeholder: '请选择门店',
+              filterable: true
+            }
+          }
+        }
+      ]
+    }
+  },
+  created () {
+    if (window.IsStore) {
+      this.formItem.splice(2, 1)
+    }
+  },
   methods: {
     handleLoad (app) {
       app
@@ -54,7 +114,10 @@ export default {
             },
             {
               prop: 'bill_date',
-              label: '单据日期'
+              label: '单据日期',
+              formatter: (row) => {
+                return dateFormat('YYYY-mm-dd HH:MM', new Date(row.bill_date))
+              }
             },
             {
               prop: 'sv_in_num_0',
@@ -79,57 +142,7 @@ export default {
           ]
         })
         .set('searchForm', {
-          item: [
-            {
-              prop: 'startdate&enddate',
-              name: 'DcDatePicker'
-            },
-            {
-              prop: 'storestocktype',
-              name: 'el-select',
-              component: {
-                style: {
-                  width: '150px'
-                },
-                props: {
-                  placeholder: '请选择'
-                },
-                options: [
-                  {
-                    label: '全部',
-                    value: -1
-                  },
-                  {
-                    label: '销售单',
-                    value: 1
-                  },
-                  {
-                    label: '入库单',
-                    value: 2
-                  },
-                  {
-                    label: '出库单',
-                    value: 3
-                  },
-                  {
-                    label: '调拨单',
-                    value: 4
-                  }
-                ]
-              }
-            },
-            {
-              prop: 'user_id',
-              name: 'el-cascader',
-              service: getCommonBranchStorelist,
-              component: {
-                props: {
-                  placeholder: '请选择门店',
-                  filterable: true
-                }
-              }
-            }
-          ],
+          item: this.formItem,
           keyWords: {
             prop: 'keywards',
             placeholder: '输入商品名称/单据编号',

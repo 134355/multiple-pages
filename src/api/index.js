@@ -1,27 +1,27 @@
 import request from '@/utils/request'
 
-function toTree (data) {
-  const map = {}
-  const val = []
-  data = data.map(item => {
-    const obj = {
-      label: item.sv_us_name,
-      value: item.user_id,
-      pid: item.sv_headquarters_id
-    }
-    map[item.user_id] = obj
-    return obj
-  })
-  data.forEach(item => {
-    const parent = map[item.pid]
-    if (parent) {
-      (parent.children || (parent.children = [])).push(item)
-    } else {
-      val.push(item)
-    }
-  })
-  return val
-}
+// function toTree (data) {
+//   const map = {}
+//   const val = []
+//   data = data.map(item => {
+//     const obj = {
+//       label: item.sv_us_name,
+//       value: item.user_id,
+//       pid: item.sv_headquarters_id
+//     }
+//     map[item.user_id] = obj
+//     return obj
+//   })
+//   data.forEach(item => {
+//     const parent = map[item.pid]
+//     if (parent) {
+//       (parent.children || (parent.children = [])).push(item)
+//     } else {
+//       val.push(item)
+//     }
+//   })
+//   return val
+// }
 
 /**
  * @description 获取商品销售数据统计信息
@@ -117,8 +117,13 @@ function getCommonBranchStorelist (params) {
     request.get('/api/BranchStore/GetCommonBranchStorelist', {
       params
     }).then(res => {
-      const data = toTree(res)
-      data.push({
+      const data = res.map(item => {
+        return {
+          label: item.sv_us_name,
+          value: item.user_id
+        }
+      })
+      data.unshift({
         label: '所有店铺',
         value: -1
       })
@@ -252,21 +257,6 @@ function getUserBusinessExcel (params) {
     user_id: userId
   }
   return request.get('/api/IntelligentAnalysis/GetUserBusiness_Excel', {
-    params: data
-  })
-}
-
-/**
- * @description 获取商品进货统计信息
- */
-function getProInStockStaInfo (params) {
-  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
-  delete params.user_id
-  const data = {
-    ...params,
-    user_id: userId
-  }
-  return request.get('/api/IntelligentAnalysis/GetProInStockStaInfo', {
     params: data
   })
 }
@@ -423,6 +413,156 @@ function supplierPurRankExcel (params) {
   })
 }
 
+/**
+ * @description 出入库汇总表
+ */
+function getStockSummaryInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetStockSummaryInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 出入库汇总导出
+ */
+function stockSummaryExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/StockSummary_Excel', {
+    params: data
+  })
+}
+
+/**
+ * @description 进销存报表
+ */
+function getInvStatementInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetInvStatementInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 进销存报表导出
+ */
+function invStatementExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/InvStatement_Excel', {
+    params: data
+  })
+}
+
+/**
+ * @description 盘点明细表
+ */
+function getStockCheckDetailInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetStockCheckDetailInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 盘点明细表导出
+ */
+function stockCheckDetailExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/StockCheckDetail_Excel', {
+    params: data
+  })
+}
+
+/**
+ * @description 盘点差异表
+ */
+function getStockCheckDiffInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetStockCheckDiffInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 盘点差异表导出
+ */
+function storeStockCheckDiffExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/StoreStockCheckDiff_Excel', {
+    params: data
+  })
+}
+
+/**
+ * @description 获取商品进货统计信息
+ */
+function getProInStockStaInfo (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetProInStockStaInfo', {
+    params: data
+  })
+}
+
+/**
+ * @description 导出商品进货统计信息
+ */
+function getProInStockStaInfoExcel (params) {
+  const userId = params.user_id ? params.user_id[params.user_id.length - 1] : ''
+  delete params.user_id
+  const data = {
+    ...params,
+    user_id: userId
+  }
+  return request.get('/api/IntelligentAnalysis/GetProInStockStaInfo_Excel', {
+    params: data
+  })
+}
+
 export {
   getProSaleStaInfo,
   proSaleStaExcel,
@@ -450,5 +590,14 @@ export {
   getProductsPurRankInfo,
   productsPurRankExcel,
   getSupplierPurRankInfo,
-  supplierPurRankExcel
+  supplierPurRankExcel,
+  getStockSummaryInfo,
+  stockSummaryExcel,
+  getInvStatementInfo,
+  invStatementExcel,
+  getStockCheckDetailInfo,
+  stockCheckDetailExcel,
+  getStockCheckDiffInfo,
+  storeStockCheckDiffExcel,
+  getProInStockStaInfoExcel
 }

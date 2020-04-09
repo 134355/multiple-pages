@@ -8,15 +8,42 @@
   </div>
 </template>
 <script>
-import { getProSaleStaInfo, getCommonBranchStorelist } from '@/api/index'
+import { getStockSummaryInfo, stockSummaryExcel, getCommonBranchStorelist } from '@/api/index'
+import { download, parseParams } from '@/utils/utils'
 
 export default {
   name: 'InboundAndOutboundSummary',
+  data () {
+    return {
+      formItem: [
+        {
+          prop: 'startdate&enddate',
+          name: 'DcDatePicker'
+        },
+        {
+          prop: 'user_id',
+          name: 'el-cascader',
+          service: getCommonBranchStorelist,
+          component: {
+            props: {
+              placeholder: '请选择门店',
+              filterable: true
+            }
+          }
+        }
+      ]
+    }
+  },
+  created () {
+    if (window.IsStore) {
+      this.formItem.splice(1, 1)
+    }
+  },
   methods: {
     handleLoad (app) {
       app
         .set('service', {
-          page: getProSaleStaInfo
+          page: getStockSummaryInfo
         })
         .set('table', {
           columns: [
@@ -27,69 +54,53 @@ export default {
               width: '50'
             },
             {
-              prop: 'sv_p_name',
+              prop: 'sv_user_name',
               label: '门店'
             },
             {
-              prop: 'sv_p_barcode',
+              prop: 'bill_date',
               label: '月份'
             },
             {
-              prop: 'sv_p_specs',
+              prop: 'sv_p_barcode',
               label: '商品编号'
             },
             {
-              prop: 'address',
+              prop: 'sv_p_name',
               label: '商品名称'
             },
             {
-              prop: 'sv_p_unit',
+              prop: 'sv_pc_name',
               label: '类别'
             },
             {
-              prop: 'sv_p_storage',
+              prop: 'sv_p_specs',
               label: '规格'
             },
             {
-              prop: 'product_sale_num',
+              prop: 'sv_p_unit',
               label: '单位'
             },
             {
-              prop: 'product_total_price',
+              prop: 'sv_in_num',
               label: '进项数量'
             },
             {
-              prop: 'product_receivable',
+              prop: 'sv_in_amounts',
               label: '进项金额'
             },
             {
-              prop: 'product_rec_proportion',
+              prop: 'sv_out_num',
               label: '出项数量'
             },
             {
-              prop: 'product_profit',
+              prop: 'sv_out_amounts',
               label: '出项金额'
             }
           ]
         })
         .set('searchForm', {
-          item: [
-            {
-              prop: 'startdate&enddate',
-              name: 'DcDatePicker'
-            },
-            {
-              prop: 'user_id',
-              name: 'el-cascader',
-              service: getCommonBranchStorelist,
-              component: {
-                props: {
-                  placeholder: '请选择门店',
-                  filterable: true
-                }
-              }
-            }
-          ],
+          item: this.formItem,
           keyWords: {
             prop: 'keywards',
             placeholder: '输入商品名称/商品编号',
@@ -101,6 +112,11 @@ export default {
         })
         .set('action', [])
         .done()
+    },
+    handleExport (data) {
+      stockSummaryExcel(parseParams(data)).then(res => {
+        download(res)
+      })
     }
   }
 }

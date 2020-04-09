@@ -13,6 +13,32 @@ import { download } from '@/utils/utils'
 
 export default {
   name: 'CommodityPurchasingStatistics',
+  data () {
+    return {
+      formItem: [
+        {
+          prop: 'startdate&enddate',
+          name: 'DcDatePicker'
+        },
+        {
+          prop: 'user_id',
+          name: 'el-cascader',
+          service: getCommonBranchStorelist,
+          component: {
+            props: {
+              placeholder: '请选择门店',
+              filterable: true
+            }
+          }
+        }
+      ]
+    }
+  },
+  created () {
+    if (window.IsStore) {
+      this.formItem.splice(1, 1)
+    }
+  },
   methods: {
     handleLoad (app) {
       app
@@ -64,23 +90,7 @@ export default {
           ]
         })
         .set('searchForm', {
-          item: [
-            {
-              prop: 'startdate&enddate',
-              name: 'DcDatePicker'
-            },
-            {
-              prop: 'user_id',
-              name: 'el-cascader',
-              service: getCommonBranchStorelist,
-              component: {
-                props: {
-                  placeholder: '请选择门店',
-                  filterable: true
-                }
-              }
-            }
-          ],
+          item: this.formItem,
           keyWords: {
             prop: 'keywards',
             placeholder: '输入商品名称/商品编码查询',
