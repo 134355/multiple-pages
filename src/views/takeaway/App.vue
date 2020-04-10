@@ -20,6 +20,5 @@ export default {
 
 <style lang="scss" scoped>
 .takeaway {
-  padding: 20px;
 }
 </style>

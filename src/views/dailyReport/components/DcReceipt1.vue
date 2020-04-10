@@ -6,7 +6,7 @@
         <td class="label min-ta-right">数量</td>
         <td class="label min-ta-right">金额</td>
       </tr>
-      <tr v-for="item in list" :key="item.label">
+      <tr v-for="(item, index) in list" :key="index">
         <td class="label">{{item.label}}</td>
         <td class="min-ta-right">{{item.num}}</td>
         <td class="min-ta-right">{{item.money}}</td>

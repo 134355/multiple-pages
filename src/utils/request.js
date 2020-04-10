@@ -16,8 +16,9 @@ const key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIyODE3MzE5MSIsImlhdC
 instance.interceptors.request.use(config => {
   // 在发送请求之前做些什么
   if (config.method === 'get') {
+    const datamodel = JSON.parse(sessionStorage.getItem('datamodel')) || {}
     config.params = {
-      key: sessionStorage.getItem('dcKey') || key,
+      key: datamodel.dcKey || key,
       ...config.params
     }
   }

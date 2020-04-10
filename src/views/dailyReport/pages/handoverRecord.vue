@@ -528,6 +528,7 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
+@import '../../../../element-variables.scss';
 .statistics {
   width: 300px;
   font-size: 12px;
@@ -560,7 +561,7 @@ export default {
     border-radius: 4px;
     width: 4px;
     height: 100%;
-    background: #409EFF;
+    background: $--color-primary;
   }
 }
 </style>

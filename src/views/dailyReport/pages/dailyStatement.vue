@@ -26,12 +26,16 @@
           <el-radio-button label="1">{{head1}}</el-radio-button>
           <el-radio-button label="2">{{head2}}</el-radio-button>
         </el-radio-group>
-        <div v-show="radio1 === '1'" id="chartColumn" style="width: 300px; height: 160px;"></div>
-        <div v-show="radio1 === '2'" id="chartColumnx" style="width: 300px; height: 160px;"></div>
+        <div v-show="radio1 === '1' && opinionData1.length !== 0" id="chartColumn" style="width: 500px; height: 400px;">
+        </div>
+        <div v-show="radio1 === '2' && iopinionData1.length !== 0" id="chartColumnx" style="width: 500px; height: 400px;"></div>
+        <div v-if="radio1 === '1' && opinionData1.length === 0" style="padding: 20px;">暂无数据</div>
+        <div v-if="radio1 === '2' && iopinionData1.length === 0" style="padding: 20px;">暂无数据</div>
       </el-col>
       <el-col :span="styleStatus">
         <div class="title m-bottom-20">新增会员统计</div>
-        <div id="chartColumn1" style="width: 300px; height: 160px;"></div>
+        <div v-show="opinionData.length !== 0" id="chartColumn1" style="width: 500px; height: 400px;"></div>
+        <div v-if="opinionData.length === 0" style="padding: 20px;">暂无数据</div>
       </el-col>
       <el-col :span="styleStatus" v-if="member">
         <div class="title">会员储值金额</div>
@@ -132,12 +136,8 @@ export default {
     }
   },
   created () {
-    console.log(window.IsStore)
-    if (window.IsStore) {
-      this.showStore = window.IsStore
-    } else {
-      this.showStore = false
-    }
+    const datamodel = JSON.parse(sessionStorage.getItem('datamodel')) || {}
+    this.showStore = datamodel.isStore
   },
   mounted () {
     this.$nextTick(function () {
@@ -277,7 +277,7 @@ export default {
             money: totalMoney3
           })
         }
-
+        console.log(this.iopinionData1.length !== 0)
         this.drawPie('chartColumn1', opinion, opinionData, obj, liveCount)
         this.drawPie('chartColumn', this.opinion1, this.opinionData1, this.obj1, this.mamount)
         this.drawPie('chartColumnx', this.iopinion1, this.iopinionData1, this.iobj1, this.iamount)
@@ -294,7 +294,7 @@ export default {
 
           ].join('\n'),
           top: 'center',
-          left: '18%',
+          left: '58%',
           textAlign: 'center',
           textStyle: {
             rich: {
@@ -320,7 +320,7 @@ export default {
         color: ['#3992F9 ', '#54E58B', '#FCD866', '#F79C2C', '#f16093', '#60d1f1', '#d1f160', '#f17460'],
         legend: {
           orient: 'center',
-          x: 'right',
+          x: 'left',
           y: 'center',
           formatter: (name) => {
             return obj[name]
@@ -332,7 +332,7 @@ export default {
             name: '状态',
             type: 'pie',
             radius: ['40%', '70%'],
-            center: ['20%', '50%'],
+            center: ['60%', '50%'],
             avoidLabelOverlap: false,
             hoverOffset: 2,
             itemStyle: {
@@ -363,6 +363,13 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+@import '../../../../element-variables.scss';
+.w500 {
+  width: 500px;
+}
+.w0 {
+  width: 0px;
+}
 .dailyStatement {
   background: #ffffff;
 }
@@ -392,7 +399,7 @@ export default {
     border-radius: 4px;
     width: 4px;
     height: 100%;
-    background: #409EFF;
+    background: $--color-primary;
   }
 }
 </style>

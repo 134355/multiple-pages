@@ -10,7 +10,7 @@
       <el-tab-pane label="门店概况" name="storeOverview">
         <StoreOverview v-if="activeName === 'storeOverview'" />
       </el-tab-pane>
-      <el-tab-pane label="营业报表" name="businessStatement">
+      <el-tab-pane label="营业报表" name="businessStatement" v-if="!isStore">
         <BusinessStatement v-if="activeName === 'businessStatement'" />
       </el-tab-pane>
       <el-tab-pane label="商品销售统计" name="commoditySalesStatistics">
@@ -43,14 +43,13 @@ export default {
   },
   data () {
     return {
-      activeName: 'dailyStatement'
+      activeName: 'dailyStatement',
+      isStore: false
     }
+  },
+  created () {
+    const datamodel = JSON.parse(sessionStorage.getItem('datamodel')) || {}
+    this.isStore = datamodel.isStore
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.dailyReport {
-  padding: 20px;
-}
-</style>

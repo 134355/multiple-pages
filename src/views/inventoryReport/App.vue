@@ -65,7 +65,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.inventoryReport {
-  padding: 20px;
-}
+
 </style>

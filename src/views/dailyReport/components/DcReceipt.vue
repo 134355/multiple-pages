@@ -1,7 +1,7 @@
 <template>
   <div class="receipt">
     <table>
-      <tr v-for="item in list" :key="item.label">
+      <tr v-for="(item, index) in list" :key="index">
         <td class="label">{{item.label}}</td>
         <td class="min-ta-right">{{item.money}}</td>
       </tr>

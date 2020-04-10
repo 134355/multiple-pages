@@ -7,7 +7,6 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 const cdn = {
   production: {
     css: [
-      'https://cdn.bootcss.com/element-ui/2.13.0/theme-chalk/index.css',
       'https://cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css'
     ],
     js: [
@@ -22,7 +21,6 @@ const cdn = {
   },
   development: {
     css: [
-      'https://cdn.bootcss.com/element-ui/2.13.0/theme-chalk/index.css',
       'https://cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css'
     ]
   }

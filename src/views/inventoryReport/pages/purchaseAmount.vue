@@ -79,7 +79,8 @@ export default {
   },
   created () {
     this.getProInStockStaInfo({})
-    if (window.IsStore) {
+    const datamodel = JSON.parse(sessionStorage.getItem('datamodel')) || {}
+    if (datamodel.isStore) {
       this.form.item.splice(1, 1)
     }
   },

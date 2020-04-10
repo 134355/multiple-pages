@@ -92,13 +92,13 @@
       </div>
       <el-form label-width="80px" label-position="left" size="mini">
         <el-form-item label="手机号码">
-          <el-input style="width: 200px;" v-model="phone" placeholder="请输入注册手机号码"></el-input>
+          <el-input style="width: 200px;" v-model="mobile" placeholder="请输入注册手机号码"></el-input>
         </el-form-item>
         <el-form-item label="企业全称">
-          <el-input style="width: 200px;" v-model="enterprise" placeholder="请输入企业全称"></el-input>
+          <el-input style="width: 200px;" v-model="enterprise_name" placeholder="请输入企业全称"></el-input>
         </el-form-item>
         <el-form-item label="企业地址">
-          <el-select v-model="value" placeholder="选择城市" style="width: 100px;">
+          <el-select v-model="city_name" placeholder="选择城市" style="width: 100px;">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -106,13 +106,13 @@
               :value="item.value">
             </el-option>
           </el-select>
-          <el-input style="width: 200px;" v-model="addr" placeholder="请输入具体地址"></el-input>
+          <el-input style="width: 200px;" v-model="enterprise_address" placeholder="请输入具体地址"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input style="width: 200px;" v-model="name" placeholder="请输入联系人姓名"></el-input>
+          <el-input style="width: 200px;" v-model="contact_name" placeholder="请输入联系人姓名"></el-input>
         </el-form-item>
         <el-form-item label="联系电话">
-          <el-input style="width: 200px;" v-model="tel" placeholder="请输入联系电话"></el-input>
+          <el-input style="width: 200px;" v-model="contact_phone" placeholder="请输入联系电话"></el-input>
         </el-form-item>
         <el-form-item label="邮箱地址">
           <el-input style="width: 200px;" v-model="email" placeholder="请输入邮箱地址"></el-input>
@@ -161,57 +161,78 @@ export default {
       // 配送模式
       outModel: false,
       jData: {},
-      phone: '',
-      enterprise: '',
-      addr: '',
-      name: '',
-      tel: '',
+      mobile: '',
+      enterprise_name: '',
+      enterprise_address: '',
+      contact_name: '',
+      contact_phone: '',
+      city_name: '',
       email: ''
     }
   },
   created () {
-    axios.get('http://192.168.1.220:97/api/TakeOutFood/GetUserModuleConfigDetail?key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI1ODEzOTA5OSIsImlhdCI6MTU4NTUzODk0NSwianRpIjpmYWxzZSwiZGVjX2lzc2FsZXNjbGVyayI6ZmFsc2UsImRlY19zYWxlc2NsZXJrX2lkIjowfQ.Q-nr6X4kQhEYTAzkPybeyZDLYsfFmo2iDWG4aa7XZfA&code=ShopCateringWechatConfig')
+    this.suppurtCitys()
+    axios.get('http://192.168.1.220:97/api/TakeOutFood/GetUserModuleConfigDetail')
       .then(res => {
-        let data = res.data.values.sv_detail_value
-        data = JSON.parse(data)
-        this.jData = data
-        this.ProductiveTimePer = data.TakeOutWayModel.OutModelConfig.ProductiveTimePer
-        this.ReceiveOrderMode = data.TakeOutWayModel.OutModelConfig.ReceiveOrderMode
-        this.DiliverDistance = data.TakeOutWayModel.OutModelConfig.DiliverDistance
-        this.DeliverMode = data.TakeOutWayModel.OutModelConfig.DeliverMode
-        this.MaxDay4Book = data.TakeOutWayModel.OutModelConfig.MaxDay4Book
-        this.inModel = data.TakeOutWayModel.inModel
-        this.outModel = data.TakeOutWayModel.outModel
-        const d = JSON.parse(data.TakeOutWayModel.OutModelConfig.DeviverConfig)
-        this.SourceId = d.SourceId
-        this.ShopId = d.ShopId
-        this.CityName = d.CityName
-        this.CityCode = d.CityCode
+        if (res.data.values) {
+          let data = res.data.values.sv_detail_value
+          data = JSON.parse(data)
+          this.jData = data
+          this.ProductiveTimePer = data.TakeOutWayModel.OutModelConfig.ProductiveTimePer
+          this.ReceiveOrderMode = data.TakeOutWayModel.OutModelConfig.ReceiveOrderMode
+          this.DiliverDistance = data.TakeOutWayModel.OutModelConfig.DiliverDistance
+          this.DeliverMode = data.TakeOutWayModel.OutModelConfig.DeliverMode
+          this.MaxDay4Book = data.TakeOutWayModel.OutModelConfig.MaxDay4Book
+          this.inModel = data.TakeOutWayModel.inModel
+          this.outModel = data.TakeOutWayModel.outModel
+          const d = JSON.parse(data.TakeOutWayModel.OutModelConfig.DeviverConfig)
+          this.SourceId = d.SourceId
+          this.ShopId = d.ShopId
+          this.CityName = d.CityName
+          this.CityCode = d.CityCode
+        }
       })
   },
   methods: {
     openDialog () {
-      this.phone = ''
-      this.enterprise = ''
-      this.addr = ''
-      this.name = ''
-      this.tel = ''
+      this.mobile = ''
+      this.city_name = ''
+      this.enterprise_name = ''
+      this.enterprise_address = ''
+      this.contact_name = ''
+      this.contact_phone = ''
       this.email = ''
-      this.value = ''
       this.dialogVisible = true
     },
     suppurtCitys () {
-      axios.get('http://192.168.1.69:2081/api/Wx/SuppurtCitys?key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI1ODEzOTA5OSIsImlhdCI6MTU4NTUzODk0NSwianRpIjpmYWxzZSwiZGVjX2lzc2FsZXNjbGVyayI6ZmFsc2UsImRlY19zYWxlc2NsZXJrX2lkIjowfQ.Q-nr6X4kQhEYTAzkPybeyZDLYsfFmo2iDWG4aa7XZfA')
+      axios.get('http://192.168.1.69:2081/api/Wx/SuppurtCitys')
         .then(res => {
-          console.log(res)
+          if (res.data && res.data.values) {
+            res.data.values.map(item => {
+              return {
+                label: item.cityName,
+                value: item.cityCode
+              }
+            })
+          }
         })
     },
     registerMerchant () {
-      axios.post('http://192.168.1.69:2081/api/Wx/RegisterMerchant?key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI1ODEzOTA5OSIsImlhdCI6MTU4NTUzODk0NSwianRpIjpmYWxzZSwiZGVjX2lzc2FsZXNjbGVyayI6ZmFsc2UsImRlY19zYWxlc2NsZXJrX2lkIjowfQ.Q-nr6X4kQhEYTAzkPybeyZDLYsfFmo2iDWG4aa7XZfA', {
-
+      axios.post('http://192.168.1.69:2081/api/Wx/RegisterMerchant', {
+        mobile: this.mobile,
+        city_name: this.city_name,
+        enterprise_name: this.enterprise_name,
+        enterprise_address: this.enterprise_address,
+        contact_name: this.contact_name,
+        contact_phone: this.contact_phone,
+        email: this.email
       })
         .then(res => {
-          console.log(res)
+          if (res.data.succeed) {
+            console.log(res.data)
+          } else {
+            this.$message.error(res.data.errmsg)
+          }
         })
     },
     submit () {

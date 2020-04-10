@@ -70,7 +70,8 @@ export default {
     }
   },
   created () {
-    if (window.IsStore) {
+    const datamodel = JSON.parse(sessionStorage.getItem('datamodel')) || {}
+    if (datamodel.isStore) {
       this.formItem.splice(1, 1)
     }
   },

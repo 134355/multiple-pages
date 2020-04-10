@@ -1,5 +1,5 @@
 <template>
-  <div class="storedValueBalanceStatistics p-lr-20">
+  <div class="storedValueBalanceStatistics">
     <min-view @load="handleLoad"></min-view>
   </div>
 </template>
@@ -28,7 +28,8 @@ export default {
     }
   },
   created () {
-    if (window.IsStore) {
+    const datamodel = JSON.parse(sessionStorage.getItem('datamodel')) || {}
+    if (datamodel.isStore) {
       this.formItem.splice(1, 1)
     }
   },

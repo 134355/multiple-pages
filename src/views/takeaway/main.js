@@ -5,6 +5,7 @@ import DcDatePicker from '@/components/DcDatePicker'
 import MinView from 'min-view'
 import DcForm from '@/components/DcForm/index'
 import 'min-view/dist/MinView.css'
+import '../../../theme/index.css'
 import '@/style/index.scss'
 
 Vue.config.productionTip = false
