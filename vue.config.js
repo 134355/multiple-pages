@@ -90,7 +90,7 @@ module.exports = {
   devServer: {
     index: '/',
     open: true,
-    host: '',
+    host: '0.0.0.0',
     https: false,
     hotOnly: false,
     before: app => {

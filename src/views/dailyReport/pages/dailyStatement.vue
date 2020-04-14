@@ -20,7 +20,7 @@
       </div>
     </el-row>
     <el-row class="m-top-20">
-      <el-col :span="styleStatus">
+      <!-- <el-col :span="styleStatus">
         <div class="title m-bottom-20">支付消费统计</div>
         <el-radio-group v-model="radio1">
           <el-radio-button label="1">{{head1}}</el-radio-button>
@@ -31,11 +31,23 @@
         <div v-show="radio1 === '2' && iopinionData1.length !== 0" id="chartColumnx" style="width: 500px; height: 400px;"></div>
         <div v-if="radio1 === '1' && opinionData1.length === 0" style="padding: 20px;">暂无数据</div>
         <div v-if="radio1 === '2' && iopinionData1.length === 0" style="padding: 20px;">暂无数据</div>
-      </el-col>
-      <el-col :span="styleStatus">
+      </el-col> -->
+      <!-- <el-col :span="styleStatus">
         <div class="title m-bottom-20">新增会员统计</div>
         <div v-show="opinionData.length !== 0" id="chartColumn1" style="width: 500px; height: 400px;"></div>
         <div v-if="opinionData.length === 0" style="padding: 20px;">暂无数据</div>
+      </el-col> -->
+      <el-col :span="styleStatus" v-if="membert1">
+        <div class="title">会员消费统计</div>
+        <DcReceipt :list="list7" />
+      </el-col>
+      <el-col :span="styleStatus" v-if="sanke">
+        <div class="title">散客消费统计</div>
+        <DcReceipt :list="list6" />
+      </el-col>
+      <el-col :span="styleStatus" v-if="membert">
+        <div class="title">新增会员统计</div>
+        <DcReceipt :list="list5" />
       </el-col>
       <el-col :span="styleStatus" v-if="member">
         <div class="title">会员储值金额</div>
@@ -103,6 +115,9 @@ export default {
       list2: [],
       list3: [],
       list4: [],
+      list5: [],
+      list6: [],
+      list7: [],
       charts: '',
       opinion: ['支付宝', '微信', '现金', '龙支付'],
       opinionData: [
@@ -132,6 +147,9 @@ export default {
       refund: false,
       mitsuji: false,
       member: false,
+      membert: false,
+      sanke: false,
+      membert1: false,
       showStore: true
     }
   },
@@ -140,10 +158,6 @@ export default {
     this.showStore = datamodel.isStore
   },
   mounted () {
-    this.$nextTick(function () {
-      // this.drawPie('chartColumn')
-      // this.drawPie('chartColumn1')
-    })
     this.getDailyBillInfo()
     getCommonBranchStorelist().then(res => {
       this.options = res
@@ -164,49 +178,101 @@ export default {
         this.secondaryCard = false
         this.mitsuji = false
         this.member = false
+        this.membert1 = false
+        this.membert = false
+        this.sanke = false
         this.totalData = res.totalData
-        const opinion = []
-        const obj = {}
-        const liveCount = res.livemodel.liveCount
-        const opinionData = res.livemodel.livemodel.map(item => {
-          opinion.push(item.name)
-          const count = isNaN(item.count / res.livemodel.liveCount) ? 0 : ((item.count / res.livemodel.liveCount) * 100).toFixed(2)
-          obj[item.name] = `${item.name}    ${item.count}￥    ${count}%`
-          return {
-            name: item.name,
-            value: item.count
-          }
-        })
+        // const opinion = []
+        // const obj = {}
+        // const liveCount = res.livemodel.liveCount
+        // const opinionData = res.livemodel.livemodel.map(item => {
+        //   opinion.push(item.name)
+        //   const count = isNaN(item.count / res.livemodel.liveCount) ? 0 : ((item.count / res.livemodel.liveCount) * 100).toFixed(2)
+        //   obj[item.name] = `${item.name}    ${item.count}￥    ${count}%`
+        //   return {
+        //     name: item.name,
+        //     value: item.count
+        //   }
+        // })
 
-        if (res.memberConsumeData) {
-          this.mamount = res.memberConsumeData.amount
-          this.opinion1 = []
-          this.obj1 = {}
-          this.head1 = res.memberConsumeData.head
-          this.opinionData1 = res.memberConsumeData.consumeData.map(item => {
-            this.opinion1.push(item.payment)
-            const count = isNaN(item.amount / this.mamount) ? 0 : ((item.amount / this.mamount) * 100).toFixed(2)
-            this.obj1[item.payment] = `${item.payment}   ${item.amount}￥   ${count}%`
-            return {
-              name: item.payment,
-              value: item.amount
+        if (res.livemodel && res.livemodel.liveCount !== 0) {
+          this.membert = true
+          const liveCount = res.livemodel.liveCount
+          res.livemodel.livemodel.forEach(item => {
+            if (item.count !== '0') {
+              this.list5.push({
+                label: item.name,
+                money: item.count
+              })
             }
+          })
+          this.list5.push({
+            label: '合计',
+            money: liveCount
           })
         }
 
-        if (res.individualConsumeData) {
-          this.iamount = res.individualConsumeData.amount
-          this.iopinion1 = []
-          this.iobj1 = {}
-          this.head2 = res.individualConsumeData.head
-          this.iopinionData1 = res.individualConsumeData.consumeData.map(item => {
-            this.iopinion1.push(item.payment)
-            const count = isNaN(item.amount / this.iamount) ? 0 : ((item.amount / this.iamount) * 100).toFixed(2)
-            this.iobj1[item.payment] = `${item.payment}   ${item.amount}￥   ${count}%`
-            return {
-              name: item.payment,
-              value: item.amount
-            }
+        // if (res.memberConsumeData) {
+        //   this.mamount = res.memberConsumeData.amount
+        //   this.opinion1 = []
+        //   this.obj1 = {}
+        //   this.head1 = res.memberConsumeData.head
+        //   this.opinionData1 = res.memberConsumeData.consumeData.map(item => {
+        //     this.opinion1.push(item.payment)
+        //     const count = isNaN(item.amount / this.mamount) ? 0 : ((item.amount / this.mamount) * 100).toFixed(2)
+        //     this.obj1[item.payment] = `${item.payment}   ${item.amount}￥   ${count}%`
+        //     return {
+        //       name: item.payment,
+        //       value: item.amount
+        //     }
+        //   })
+        // }
+
+        if (res.memberConsumeData && res.memberConsumeData.amount !== 0) {
+          this.membert1 = true
+          const amount = res.memberConsumeData.amount
+          res.memberConsumeData.consumeData.forEach(item => {
+            this.list7.push({
+              label: item.payment,
+              money: item.amount
+            })
+          })
+          this.list7.push({
+            label: '合计',
+            money: amount
+          })
+        }
+
+        // if (res.individualConsumeData) {
+        //   this.iamount = res.individualConsumeData.amount
+
+        //   this.iopinion1 = []
+        //   this.iobj1 = {}
+        //   this.head2 = res.individualConsumeData.head
+        //   this.iopinionData1 = res.individualConsumeData.consumeData.map(item => {
+
+        //     this.iopinion1.push(item.payment)
+        //     const count = isNaN(item.amount / this.iamount) ? 0 : ((item.amount / this.iamount) * 100).toFixed(2)
+        //     this.iobj1[item.payment] = `${item.payment}   ${item.amount}￥   ${count}%`
+        //     return {
+        //       name: item.payment,
+        //       value: item.amount
+        //     }
+        //   })
+        // }
+
+        if (res.individualConsumeData && res.individualConsumeData.amount !== 0) {
+          this.sanke = true
+          const amount = res.individualConsumeData.amount
+          res.individualConsumeData.consumeData.forEach(item => {
+            this.list6.push({
+              label: item.payment,
+              money: item.amount
+            })
+          })
+          this.list6.push({
+            label: '合计',
+            money: amount
           })
         }
 
@@ -247,7 +313,7 @@ export default {
         }
 
         let totalMoney2 = 0
-        if (res.refundData) {
+        if (res.membeRechargeData) {
           this.member = true
           this.list3 = res.membeRechargeData.consumeData.map(item => {
             totalMoney2 += item.amount
@@ -263,7 +329,7 @@ export default {
         }
 
         let totalMoney3 = 0
-        if (res.refundData) {
+        if (res.membeChargeSubData) {
           this.mitsuji = true
           this.list4 = res.membeChargeSubData.consumeData.map(item => {
             totalMoney3 += item.amount
@@ -277,10 +343,9 @@ export default {
             money: totalMoney3
           })
         }
-        console.log(this.iopinionData1.length !== 0)
-        this.drawPie('chartColumn1', opinion, opinionData, obj, liveCount)
-        this.drawPie('chartColumn', this.opinion1, this.opinionData1, this.obj1, this.mamount)
-        this.drawPie('chartColumnx', this.iopinion1, this.iopinionData1, this.iobj1, this.iamount)
+        // this.drawPie('chartColumn1', opinion, opinionData, obj, liveCount)
+        // this.drawPie('chartColumn', this.opinion1, this.opinionData1, this.obj1, this.mamount)
+        // this.drawPie('chartColumnx', this.iopinion1, this.iopinionData1, this.iobj1, this.iamount)
       })
     },
     drawPie (id, opinion, opinionData, obj, liveCount) {
